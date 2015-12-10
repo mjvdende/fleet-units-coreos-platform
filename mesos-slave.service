@@ -23,24 +23,24 @@ ExecStartPre=/usr/bin/docker pull ${REPOSITORY}
 ExecStartPre=/bin/sh -c "curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | jq -r -e .[0].ServiceAddress"
 
 ExecStart=/bin/sh -c "exec /usr/bin/docker run \
-        --name x-%p \
-        --privileged \
-        --net host \
-        -p :5051:5051 \
-        -v /var/lib/docker/btrfs/subvolumes:/var/lib/docker/btrfs/subvolumes \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /sys:/sys \
-        -v /cgroup:/cgroup \
-        -v /dev/log:/dev/log \
-        -e SERVICE_NAME=mesos-slave \
-        -e SERVICE_TAGS=http \
-        -e MESOS_MASTER=zk://$(curl $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
-                                 jq -r '.[0] | (.ServiceAddress + \":\" + (.ServicePort | tostring))')/mesos \
-        -e MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins \
-        -e MESOS_ISOLATOR=cgroups/cpu,cgroups/mem \
-        -e MESOS_CONTAINERIZERS=docker,mesos \
-        -e MESOS_RESOURCES='ports(*):[1024-5050,5052-8299,8303-8399,8401-8499,8501-65535]' \
-        ${REPOSITORY}"
+    --name x-%p \
+    --privileged \
+    --net host \
+    --publish :5051:5051 \
+    -v /var/lib/docker/btrfs/subvolumes:/var/lib/docker/btrfs/subvolumes \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /sys:/sys \
+    -v /cgroup:/cgroup \
+    -v /dev/log:/dev/log \
+    -e SERVICE_NAME=mesos-slave \
+    -e SERVICE_TAGS=http \
+    -e MESOS_MASTER=zk://$(curl $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
+                             jq -r '.[0] | (.ServiceAddress + \":\" + (.ServicePort | tostring))')/mesos \
+    -e MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins \
+    -e MESOS_ISOLATOR=cgroups/cpu,cgroups/mem \
+    -e MESOS_CONTAINERIZERS=docker,mesos \
+    -e MESOS_RESOURCES='ports(*):[1024-5050,5052-8299,8303-8399,8401-8499,8501-65535]' \
+    ${REPOSITORY}"
 
 ExecStop=/usr/bin/docker stop x-%p
 SyslogIdentifier=%p
