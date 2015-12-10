@@ -31,7 +31,7 @@ ExecStart=/bin/sh -c "set -x ; exec /usr/bin/docker run \
     -e SERVICE_5050_CHECK_INTERVAL=15s \
     -e SERVICE_5050_CHECK_TIMEOUT=2s  \
     -e MESOS_HOSTNAME=$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
-                             jq -r '.[0] | (.ServiceAddress + \":\" + (.ServicePort | tostring))') \
+                             jq -r -e .[0].ServiceAddress) \
     -e MESOS_ZK=zk://$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
                              jq -r '.[0] | (.ServiceAddress + \":\" + (.ServicePort | tostring))')/mesos \
     -e MESOS_ADVERTISE_IP=$COREOS_PRIVATE_IPV4 \
