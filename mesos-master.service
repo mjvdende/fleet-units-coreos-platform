@@ -15,23 +15,20 @@ EnvironmentFile=/etc/environment
 Environment="REPOSITORY=mesoscloud/mesos-master:0.24.1-ubuntu-14.04"
 ExecStartPre=-/usr/bin/docker kill x-%p
 ExecStartPre=-/usr/bin/docker rm x-%p
-
 ExecStartPre=/usr/bin/docker pull ${REPOSITORY}
-
 # Test whether the zookeeper is up.
 ExecStartPre=/bin/sh -c "curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | jq -r -e .[0].ServiceAddress"
 
 ExecStart=/bin/sh -c "set -x ; exec /usr/bin/docker run \
     --name x-mesos-master \
     --net host \
-    --publish $COREOS_PRIVATE_IPV4:5050:5050 \
+    -p $COREOS_PRIVATE_IPV4:5050:5050 \
     -e SERVICE_NAME=mesos \
     -e SERVICE_TAGS=http \
     -e SERVICE_5050_CHECK_HTTP=/ \
     -e SERVICE_5050_CHECK_INTERVAL=15s \
     -e SERVICE_5050_CHECK_TIMEOUT=2s  \
-    -e MESOS_HOSTNAME=$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
-                             jq -r -e .[0].ServiceAddress) \
+    -e MESOS_HOSTNAME=${COREOS_PRIVATE_IPV4} \
     -e MESOS_ZK=zk://$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
                              jq -r '.[0] | (.ServiceAddress + \":\" + (.ServicePort | tostring))')/mesos \
     -e MESOS_ADVERTISE_IP=$COREOS_PRIVATE_IPV4 \

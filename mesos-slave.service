@@ -16,9 +16,7 @@ EnvironmentFile=/etc/environment
 Environment="REPOSITORY=mesoscloud/mesos-slave:0.24.1-ubuntu-14.04"
 ExecStartPre=-/usr/bin/docker kill x-%p
 ExecStartPre=-/usr/bin/docker rm x-%p
-
 ExecStartPre=/usr/bin/docker pull ${REPOSITORY}
-
 # Test whether the zookeeper is up.
 ExecStartPre=/bin/sh -c "curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | jq -r -e .[0].ServiceAddress"
 
