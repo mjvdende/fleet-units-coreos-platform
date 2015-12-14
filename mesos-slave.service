@@ -27,7 +27,6 @@ ExecStart=/bin/sh -c "exec /usr/bin/docker run \
     --privileged \
     --net host \
     --publish :5051:5051 \
-    -v /usr/bin/docker:/usr/bin/docker \
     -v /usr/lib/libdevmapper.so.1.02:/usr/lib/libdevmapper.so.1.02 \
     -v /var/lib/docker/btrfs/subvolumes:/var/lib/docker/btrfs/subvolumes \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -36,8 +35,8 @@ ExecStart=/bin/sh -c "exec /usr/bin/docker run \
     -v /dev/log:/dev/log \
     -e SERVICE_NAME=mesos-slave \
     -e SERVICE_TAGS=http \
-    -e "MESOS_WORK_DIR=/tmp/mesos" \
-    -e "MESOS_LOG_DIR=/var/log/mesos" \
+    -e MESOS_WORK_DIR=/tmp/mesos \
+    -e MESOS_LOG_DIR=/var/log/mesos \
     -e MESOS_IP=$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
                              jq -r -e .[0].ServiceAddress) \
     -e MESOS_HOSTNAME=$(curl -s $COREOS_PRIVATE_IPV4:8500/v1/catalog/service/zookeeper?tag=zk | \
