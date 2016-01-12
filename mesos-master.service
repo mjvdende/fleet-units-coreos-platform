@@ -35,6 +35,7 @@ ExecStart=/bin/sh -c "set -x ; exec /usr/bin/docker run \
     -e MESOS_PORT=5050 \
     -e MESOS_QUORUM=1 \
     -e MESOS_CLUSTER=single-node-mesos \
+    -e MESOS_LOG_DIR=/var/log/mesos \
     ${REPOSITORY}"
 
 ExecStop=/usr/bin/docker stop x-%p
